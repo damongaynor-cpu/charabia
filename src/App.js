@@ -988,7 +988,7 @@ ${quoteBlock}${suggestions.map(s => `
             onMouseUp={onSelectionChange}
             onKeyUp={onSelectionChange}
             data-placeholder="Begin writing..."
-            style={{ ...S.editor, ...(doc?.folderId === "ai-research" ? { color: "#111" } : {}) }}
+            style={{ ...S.editor, fontFamily: editorFont, ...(doc?.folderId === "ai-research" ? { color: "#e8d5b0" } : {}) }}
           />
           </div>
 
