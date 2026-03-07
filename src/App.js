@@ -251,16 +251,11 @@ export default function WriterApp() {
         ? `Selected passage from "${sourceDoc.title}":\n\n${snippet}`
         : `Chapter/document: "${sourceDoc.title}"\n\nPassage:\n${snippet}`;
 
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          system: systemPrompt,
-          messages: [{ role: "user", content: userContent }]
-        })
-      });
+      const response = await fetch("/api/research", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ text: snippet, docTitle: sourceDoc.title, isSelection }),
+});
       const data = await response.json();
       const raw = data.content?.map(c => c.text || "").join("").trim();
       const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
@@ -293,16 +288,11 @@ export default function WriterApp() {
     if (!text || text.trim().split(/\s+/).length < 15) return;
     setCharLoading(true);
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 400,
-          system: `You are a character name extractor for fiction writers. Extract all character names (first names, full names, or titles+names) from the passage. Only return proper names of people or characters — not places, objects, or concepts. Return ONLY a JSON array of strings, nothing else. Example: ["Alice","Mr. Darcy","The Captain"]. If no character names are found, return [].`,
-          messages: [{ role: "user", content: text.slice(0, 800) }]
-        })
-      });
+      const response = await fetch("/api/characters", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ text: text.slice(0, 800) }),
+});
       const data = await response.json();
       const raw = data.content?.map(c => c.text || "").join("").trim();
       const names = JSON.parse(raw.replace(/```json|```/g, "").trim());
