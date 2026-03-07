@@ -243,22 +243,14 @@ export default function WriterApp() {
     setResearchLoading(true);
     try {
       const snippet = text.slice(0, 800);
-      const systemPrompt = isSelection
-        ? `You are a research assistant for fiction writers. The writer has selected a specific passage and wants targeted research on it. Identify 4-6 precise, actionable research topics directly relevant to THIS selection — concepts, historical details, technical facts, cultural context, or sensory details that would make this exact passage more vivid and accurate. Return ONLY a JSON object (no markdown, no backticks): {"title": "Selection Research", "suggestions": [{"topic": "Topic Name", "why": "One sentence why this matters for the selected passage", "queries": ["search query 1", "search query 2"]}]}`
-        : `You are a research assistant for fiction writers. Given a passage of writing, identify 4-6 specific, actionable research topics the writer should look into to make their work more accurate and immersive. Return ONLY a JSON object (no markdown, no backticks): {"title": "Research: [doc title]", "suggestions": [{"topic": "Topic Name", "why": "One sentence why this matters for the scene", "queries": ["search query 1", "search query 2"]}]}`;
-
-      const userContent = isSelection
-        ? `Selected passage from "${sourceDoc.title}":\n\n${snippet}`
-        : `Chapter/document: "${sourceDoc.title}"\n\nPassage:\n${snippet}`;
-
       const response = await fetch("/api/research", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ text: snippet, docTitle: sourceDoc.title, isSelection }),
-});
-const data = await response.json();
-if (!data.ok) throw new Error(data.error);
-const parsed = data.result; // already parsed, ready to use;
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: snippet, docTitle: sourceDoc.title, isSelection }),
+      });
+      const data = await response.json();
+      if (!data.ok) throw new Error(data.error);
+      const parsed = data.result;
       const time = new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
       const label = isSelection ? `✂️ Selection [${time}]` : `🔭 ${sourceDoc.title} [${time}]`;
 
@@ -288,14 +280,14 @@ const parsed = data.result; // already parsed, ready to use;
     if (!text || text.trim().split(/\s+/).length < 15) return;
     setCharLoading(true);
     try {
-     const response = await fetch("/api/characters", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ text: text.slice(0, 800) }),
-});
-const data = await response.json();
-if (!data.ok) throw new Error(data.error);
-const names = data.names; // already parsed, ready to use;
+      const response = await fetch("/api/characters", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: text.slice(0, 800) }),
+      });
+      const data = await response.json();
+      if (!data.ok) throw new Error(data.error);
+      const names = data.names;
       if (!Array.isArray(names) || names.length === 0) return;
 
       setDocs(prev => {
