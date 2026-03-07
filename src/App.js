@@ -328,7 +328,7 @@ export default function WriterApp() {
       : "";
     return `<h2 style="color:#111;font-family:'Special Elite','Courier New',monospace;border-bottom:1px solid #bbb;padding-bottom:8px;margin-bottom:14px;letter-spacing:1px;font-size:15px">Research: ${sourceTitle}</h2>
 ${quoteBlock}${suggestions.map(s => `
-<div style="margin-bottom:16px;padding:10px 12px;background:rgba(0,0,0,0.03);border-left:3px solid #333;font-family:'Special Elite','Courier New',monospace">
+<div style=\"font-size:12px;color:#7a6a55\">Search: ${s.queries.map(q => `<a href=\"https://claude.ai/new?q=${encodeURIComponent(q)}\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"background:rgba(0,0,0,0.06);padding:2px 7px;border-radius:2px;margin:2px;display:inline-block;color:#333;text-decoration:none;cursor:pointer;font-family:'Special Elite','Courier New',monospace;border:1px solid #ccc\">${q}</a>`).join(" ")}</div>
   <strong style="color:#111;font-size:13px">${s.topic}</strong>
   <p style="color:#555;margin:5px 0 7px;font-size:12px">${s.why}</p>
   <div style="font-size:11px;color:#777">Search: ${s.queries.map(q => `<span style="background:rgba(0,0,0,0.06);padding:2px 7px;margin:2px;display:inline-block;border:1px solid #ccc">${q}</span>`).join(" ")}</div>
