@@ -26,11 +26,26 @@ export default async function handler(req, res) {
         messages: [{ role: "user", content: userContent }],
       }),
     });
+
     const data = await response.json();
-    // Extract and parse the text content directly here
+
+    // Log full response so we can see what Anthropic is returning
+    console.log("Anthropic status:", response.status);
+    console.log("Anthropic response:", JSON.stringify(data));
+
+    // Check for API-level errors
+    if (data.error) {
+      return res.status(500).json({ ok: false, error: data.error.message || JSON.stringify(data.error) });
+    }
+
     const raw = data.content?.map(c => c.text || "").join("").trim();
+    if (!raw) {
+      return res.status(500).json({ ok: false, error: "Empty response from Anthropic", full: data });
+    }
+
     const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
     res.status(200).json({ ok: true, result: parsed });
+
   } catch (e) {
     console.error("Research API error:", e);
     res.status(500).json({ ok: false, error: e.message });
