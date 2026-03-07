@@ -463,95 +463,9 @@ ${quoteBlock}${suggestions.map(s => `
   };
 
   // ── Export as DOCX ───────────────────────────────────────────────────────────
-const exportDocx = () => {
+  const exportDocx = async () => {
     if (!doc) return;
-    const blocks = parseHTMLToBlocks(doc.content);
-
-    const xmlBody = [
-      `<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>${doc.title.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</w:t></w:r></w:p>`,
-      ...blocks.map(b => {
-        const t = (b.text||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-        if (!t) return `<w:p/>`;
-        if (b.type==="h1") return `<w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>${t}</w:t></w:r></w:p>`;
-        if (b.type==="h2") return `<w:p><w:pPr><w:pStyle w:val="Heading2"/></w:pPr><w:r><w:t>${t}</w:t></w:r></w:p>`;
-        if (b.type==="h3") return `<w:p><w:pPr><w:pStyle w:val="Heading3"/></w:pPr><w:r><w:t>${t}</w:t></w:r></w:p>`;
-        if (b.type==="bq") return `<w:p><w:pPr><w:ind w:left="720"/></w:pPr><w:r><w:rPr><w:i/><w:color w:val="555555"/></w:rPr><w:t>${t}</w:t></w:r></w:p>`;
-        if (b.type==="li") return `<w:p><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr></w:pPr><w:r><w:t>${t}</w:t></w:r></w:p>`;
-        if (b.type==="br") return `<w:p/>`;
-        const rpr = b.bold ? `<w:rPr><w:b/></w:rPr>` : b.italic ? `<w:rPr><w:i/></w:rPr>` : ``;
-        return `<w:p><w:pPr><w:jc w:val="both"/><w:spacing w:after="160"/></w:pPr><w:r>${rpr}<w:t xml:space="preserve">${t}</w:t></w:r></w:p>`;
-      })
-    ].join("\n");
-
-    const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
-  xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
-<w:body>
-${xmlBody}
-<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr>
-</w:body></w:document>`;
-
-    const relsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
-<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>
-</Relationships>`;
-
-    const stylesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-<w:style w:type="paragraph" w:styleId="Normal"><w:name w:val="Normal"/>
-  <w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/><w:sz w:val="24"/></w:rPr></w:style>
-<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/>
-  <w:pPr><w:spacing w:before="240" w:after="120"/></w:pPr>
-  <w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/><w:b/><w:sz w:val="36"/></w:rPr></w:style>
-<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/>
-  <w:pPr><w:spacing w:before="200" w:after="100"/></w:pPr>
-  <w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/><w:b/><w:sz w:val="28"/></w:rPr></w:style>
-<w:style w:type="paragraph" w:styleId="Heading3"><w:name w:val="heading 3"/>
-  <w:rPr><w:rFonts w:ascii="Georgia" w:hAnsi="Georgia"/><w:b/><w:i/><w:sz w:val="24"/></w:rPr></w:style>
-</w:styles>`;
-
-    const numberingXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-<w:abstractNum w:abstractNumId="0"><w:lvl w:ilvl="0"><w:start w:val="1"/>
-  <w:numFmt w:val="bullet"/><w:lvlText w:val="•"/>
-  <w:lvlJc w:val="left"/><w:pPr><w:ind w:left="720" w:hanging="360"/></w:pPr></w:lvl></w:abstractNum>
-<w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num>
-</w:numbering>`;
-
-    const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-<Default Extension="xml" ContentType="application/xml"/>
-<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
-<Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>
-</Types>`;
-
-    const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
-</Relationships>`;
-
-    // Build zip using JSZip loaded dynamically
-    const buildZip = async () => {
-      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js");
-      const zip = new window.JSZip();
-      zip.file("[Content_Types].xml", contentTypes);
-      zip.file("_rels/.rels", rootRels);
-      zip.file("word/document.xml", documentXml);
-      zip.file("word/styles.xml", stylesXml);
-      zip.file("word/numbering.xml", numberingXml);
-      zip.file("word/_rels/document.xml.rels", relsXml);
-      const blob = await zip.generateAsync({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${safeFilename(doc.title)}.docx`;
-      a.click();
-    };
-    buildZip().catch(e => alert("Export failed: " + e.message));
-  };
+    if (!window.docx) { alert("DOCX library still loading, please try again in a moment."); return; }
     const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } = window.docx;
     const blocks = parseHTMLToBlocks(doc.content);
 
@@ -585,6 +499,26 @@ ${xmlBody}
         });
       }),
     ];
+
+    const docxDoc = new Document({
+      styles: {
+        default: { document: { run: { font: "Georgia", size: 24, color: "1a1a1a" } } },
+      },
+      sections: [{
+        properties: {
+          page: { size: { width: 12240, height: 15840 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } }
+        },
+        children,
+      }],
+    });
+
+    const buffer = await Packer.toBlob(docxDoc);
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(buffer);
+    a.download = `${safeFilename(doc.title)}.docx`;
+    a.click();
+  };
+
   // ── Export as PDF ────────────────────────────────────────────────────────────
   const exportPdf = async () => {
     if (!doc) return;
