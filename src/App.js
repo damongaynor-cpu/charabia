@@ -585,26 +585,6 @@ ${xmlBody}
         });
       }),
     ];
-
-    const docxDoc = new Document({
-      styles: {
-        default: { document: { run: { font: "Georgia", size: 24, color: "1a1a1a" } } },
-      },
-      sections: [{
-        properties: {
-          page: { size: { width: 12240, height: 15840 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } }
-        },
-        children,
-      }],
-    });
-
-    const buffer = await Packer.toBlob(docxDoc);
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(buffer);
-    a.download = `${safeFilename(doc.title)}.docx`;
-    a.click();
-  };
-
   // ── Export as PDF ────────────────────────────────────────────────────────────
   const exportPdf = async () => {
     if (!doc) return;
