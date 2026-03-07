@@ -670,7 +670,7 @@ ${quoteBlock}${suggestions.map(s => `
 
   // ── Styles ───────────────────────────────────────────────────────────────────
   const S = {
-    app: { display: "flex", height: "100vh", background: "#f5f2ed", color: "#1a1a1a", fontFamily: "'Special Elite', 'Courier New', monospace", overflow: "hidden" },
+    app: { display: "flex", height: "100vh", background: "#f5f2ed", color: "#1a1a1a", fontFamily: "sans-serif", overflow: "hidden" },
     sidebar: { width: sidebarW, minWidth: sidebarW, display: "flex", flexDirection: "column", background: "#eeeae3", borderRight: "2px solid #ccc8c0", overflow: "hidden" },
     sidebarHeader: { padding: "18px 16px 12px", borderBottom: "2px solid #ccc8c0" },
     logo: { fontSize: 22, fontFamily: "'Special Elite', 'Courier New', monospace", color: "#111", letterSpacing: 2, marginBottom: 10, textShadow: "1px 1px 0 rgba(0,0,0,0.08)" },
@@ -709,7 +709,6 @@ ${quoteBlock}${suggestions.map(s => `
         body { background: #f5f2ed; }
 
         [contenteditable]:focus { outline: none; }
-        [contenteditable] { font-family: 'Special Elite', 'Courier New', monospace !important; }
         [contenteditable] h1 { font-family: 'Special Elite', 'Courier New', monospace; color: #111; font-size: 26px; margin-bottom: 14px; border-bottom: 1px solid #bbb; padding-bottom: 6px; letter-spacing: 1px; }
         [contenteditable] h2 { font-family: 'Special Elite', 'Courier New', monospace; color: #222; font-size: 20px; margin: 18px 0 8px; letter-spacing: .5px; }
         [contenteditable] h3 { font-family: 'Special Elite', 'Courier New', monospace; color: #333; font-size: 16px; margin: 14px 0 6px; }
