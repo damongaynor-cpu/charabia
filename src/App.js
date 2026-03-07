@@ -936,6 +936,18 @@ ${quoteBlock}${suggestions.map(s => `
               style={{ background: "#fff", border: "1px solid #bbb", color: "#333", borderRadius: 0, padding: "3px 6px", fontSize: 11, cursor: "pointer", fontFamily: "'Special Elite', 'Courier New', monospace" }}>
               {[1,2,3,4,5,6,7].map(n => <option key={n} value={n}>{[10,12,14,16,18,24,32][n-1]}px</option>)}
             </select>
+<select onMouseDown={e => e.stopPropagation()} onChange={e => { e.preventDefault(); document.execCommand("fontName", false, e.target.value); }}
+  style={{ background: "#fff", border: "1px solid #bbb", color: "#333", borderRadius: 0, padding: "3px 6px", fontSize: 11, cursor: "pointer", fontFamily: "'Special Elite', 'Courier New', monospace", marginLeft: 4 }}>
+  <option value="">Font…</option>
+  <option value="Special Elite, Courier New, monospace">Special Elite</option>
+  <option value="Georgia, serif">Georgia</option>
+  <option value="Palatino, serif">Palatino</option>
+  <option value="Times New Roman, serif">Times New Roman</option>
+  <option value="Courier New, monospace">Courier New</option>
+  <option value="Arial, sans-serif">Arial</option>
+  <option value="Verdana, sans-serif">Verdana</option>
+  <option value="Garamond, serif">Garamond</option>
+</select>
             <div style={{ flex: 1 }} />
             {doc?.folderId === "chapters" && (
               <button onClick={manualResearch} disabled={researchLoading}
