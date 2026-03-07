@@ -980,15 +980,20 @@ ${quoteBlock}${suggestions.map(s => `
           {/* Editor area */}
           <div className="editor-wrap" style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: "#f8f5f0" }}>
           <div
-            ref={editorRef}
-            contentEditable={doc ? true : false}
-            suppressContentEditableWarning
-            onInput={onEditorInput}
-            onMouseUp={onSelectionChange}
-            onKeyUp={onSelectionChange}
-            data-placeholder="Begin writing..."
-            style={{ ...S.editor, fontFamily: editorFont, ...(doc?.folderId === "ai-research" ? { color: "#e8d5b0" } : {}) }}
-          />
+  ref={editorRef}
+  contentEditable={doc ? true : false}
+  suppressContentEditableWarning
+  onInput={onEditorInput}
+  onClick={e => {
+    const link = e.target.closest("a");
+    if (link?.href) {
+      e.preventDefault();
+      window.open(link.href, "_blank", "noopener,noreferrer");
+    }
+  }}
+  data-placeholder="Begin writing…"
+  style={{ ...S.editor, fontFamily: editorFont, ...(doc?.folderId === "ai-research" ? { color: "#e8d5b0" } : {}) }}
+/>
           </div>
 
           {/* Status bar */}
