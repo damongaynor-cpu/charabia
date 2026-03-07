@@ -27,8 +27,12 @@ export default async function handler(req, res) {
       }),
     });
     const data = await response.json();
-    res.status(200).json(data);
+    // Extract and parse the text content directly here
+    const raw = data.content?.map(c => c.text || "").join("").trim();
+    const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
+    res.status(200).json({ ok: true, result: parsed });
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    console.error("Research API error:", e);
+    res.status(500).json({ ok: false, error: e.message });
   }
 }

@@ -19,8 +19,11 @@ export default async function handler(req, res) {
       }),
     });
     const data = await response.json();
-    res.status(200).json(data);
+    const raw = data.content?.map(c => c.text || "").join("").trim();
+    const names = JSON.parse(raw.replace(/```json|```/g, "").trim());
+    res.status(200).json({ ok: true, names });
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    console.error("Characters API error:", e);
+    res.status(500).json({ ok: false, error: e.message });
   }
 }

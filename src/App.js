@@ -256,9 +256,9 @@ export default function WriterApp() {
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ text: snippet, docTitle: sourceDoc.title, isSelection }),
 });
-      const data = await response.json();
-      const raw = data.content?.map(c => c.text || "").join("").trim();
-      const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
+const data = await response.json();
+if (!data.ok) throw new Error(data.error);
+const parsed = data.result; // already parsed, ready to use;
       const time = new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
       const label = isSelection ? `✂️ Selection [${time}]` : `🔭 ${sourceDoc.title} [${time}]`;
 
@@ -288,14 +288,14 @@ export default function WriterApp() {
     if (!text || text.trim().split(/\s+/).length < 15) return;
     setCharLoading(true);
     try {
-      const response = await fetch("/api/characters", {
+     const response = await fetch("/api/characters", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ text: text.slice(0, 800) }),
 });
-      const data = await response.json();
-      const raw = data.content?.map(c => c.text || "").join("").trim();
-      const names = JSON.parse(raw.replace(/```json|```/g, "").trim());
+const data = await response.json();
+if (!data.ok) throw new Error(data.error);
+const names = data.names; // already parsed, ready to use;
       if (!Array.isArray(names) || names.length === 0) return;
 
       setDocs(prev => {
